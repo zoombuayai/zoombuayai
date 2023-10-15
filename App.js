@@ -15,6 +15,7 @@ import SettingScreen from "./src/bottomTap/SettingScreen";
 import AccountSettingScreen from "./src/screens/AccountSettingScreen";
 import ThankyouScreen from "./src/screens/ThankyouScreen";
 import CartScreens from "./src/screens/CartScreens";
+import MakeAndOrderScreen from "./src/screens/MakeAndOrderScreen";
 // สร้าง Stack Navigator
 const Stack = createStackNavigator();
 const Tap = createMaterialBottomTabNavigator();
@@ -22,7 +23,8 @@ const Tap = createMaterialBottomTabNavigator();
 // สร้าง createMaterialBottomTabNavigator
 function TapNavigator() {
   return (
-    <Tap.Navigator initialRouteName="Homes">
+    <Tap.Navigator
+    initialRouteName="Homes">
       <Tap.Screen
         name="Setting"
         component={SettingScreen}
@@ -149,6 +151,14 @@ function App() {
         <Stack.Screen
           name="Cart"
           component={CartScreens}
+          options={{
+            headerShown: true,
+          }}
+        />
+        
+        <Stack.Screen
+          name="Make an Order"
+          component={MakeAndOrderScreen}
           options={{
             headerShown: true,
           }}

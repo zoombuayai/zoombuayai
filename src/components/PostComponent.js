@@ -2,8 +2,9 @@ import { View, Text, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
-import { FIREBASE_STORAGE } from "../../config";
+import { FIREBASE_STORAGE, FIREBASE_DB } from "../../config";
 import { getDownloadURL, ref } from "firebase/storage";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 const PostComponent = ({
   productName,
   category,
@@ -12,7 +13,10 @@ const PostComponent = ({
   userid,
   id,
   bankName,
-  createdDate
+  createdDate,
+  accountNumber,
+  accountName,
+  RealId
 }) => {
   const [imgUser,setImgUser] = useState("");
   const [imgProduct,setImgProduct] = useState("");
@@ -64,7 +68,23 @@ const PostComponent = ({
       return `${months} เดือนที่ผ่านมา`;
     }
   };
-  console.log(category);
+  const AddToCart = async () => {
+    const docRef = await addDoc(collection(FIREBASE_DB, "users" , RealId, "Cart"), {
+      Aaid : userid,
+      userid : imgUser,
+      pic : imgProduct,
+      productName : productName,
+      category : category,
+      price : price,
+      detail : detail,
+      accountNumber : accountNumber,
+      accountName : accountName,
+      bankName : bankName,
+      createdDate: serverTimestamp(), 
+      });
+      alert("Success");
+  }
+
   return (
     <View className="h-[490px] mt-10">
       <View className="px-3 pt-2">
@@ -119,7 +139,7 @@ const PostComponent = ({
           </View>
           <TouchableOpacity
             className="p-2 w-36 rounded-full justify-center items-center bg-[#6F6AF8]"
-            onPress={() => alert("ADD TO CART")}
+            onPress={() => AddToCart()}
           >
             <Text>+ Add to cart</Text>
           </TouchableOpacity>

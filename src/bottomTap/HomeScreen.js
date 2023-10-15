@@ -9,7 +9,7 @@ import { FlatList } from "react-native-gesture-handler";
 import { TouchableOpacity } from "react-native";
 import { Image } from "react-native";
 const HomeScreen = () => {
-  const [user, setUser] = useState("");
+  const [users, setUser] = useState("");
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
@@ -48,8 +48,8 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+      setUser(user.uid);
       if (user) {
-        setUser(user);
         const colRef = collection(FIREBASE_DB, 'Posts');
         const postsRef = query(colRef, orderBy('createdDate', 'desc'));
         const unsubscribePosts = onSnapshot(postsRef, (querySnapshot) => {
@@ -75,9 +75,8 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+      setUser(user.uid);
       if (user) {
-        setUser(user);
-  
         const colRef = collection(FIREBASE_DB, 'Posts');
         const postsRef = query(colRef, orderBy('createdDate', 'desc'));
         const unsubscribePosts = onSnapshot(postsRef, (querySnapshot) => {
@@ -102,7 +101,7 @@ const HomeScreen = () => {
     });
   },[selectedCategory]);
   
-  console.log(products);
+  
 
   function renderItems(item) {
     return (
@@ -127,7 +126,7 @@ const HomeScreen = () => {
       </TouchableOpacity>
     );
   }
-
+ 
   return (
     <FlatList
   data={products}
@@ -141,11 +140,14 @@ const HomeScreen = () => {
       userid={item.userid}
       id={item.id}
       bankName={item.bankName}
+      accountNumber={item.accountNumber}
       createdDate={item.createdDate}
+      accountName={item.accountName}
+      RealId={users}
     />
   )}
   ListHeaderComponent={
-    <>
+    <View style={{paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0}}>
       <SearchConponent />
       <FlatList
       horizontal
@@ -157,7 +159,7 @@ const HomeScreen = () => {
       <View className="p-2 mb-[-40px]">
         <Text className="text-2xl font-bold">Lastest Post</Text>
       </View>
-    </>
+    </View>
   }
 />
 

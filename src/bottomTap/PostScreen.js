@@ -14,7 +14,9 @@ import { FIREBASE_DB, FIREBASE_AUTH, FIREBASE_STORAGE } from "../../config";
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { serverTimestamp } from "firebase/firestore";
+import { collection, addDoc } from "firebase/firestore"; 
+
 import { ref, uploadBytes } from 'firebase/storage';
 
 const PostScreen = () => {
