@@ -4,7 +4,7 @@ import SearchConponent from "../components/SearchConponent";
 import PostComponent from "../components/PostComponent";
 import { FIREBASE_STORAGE, FIREBASE_DB, FIREBASE_AUTH } from "../../config";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, onSnapshot, orderBy, query } from "firebase/firestore";
 import { FlatList } from "react-native-gesture-handler";
 import { TouchableOpacity } from "react-native";
 import { Image } from "react-native";
@@ -50,8 +50,37 @@ const HomeScreen = () => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
       if (user) {
         setUser(user);
+        const colRef = collection(FIREBASE_DB, 'Posts');
+        const postsRef = query(colRef, orderBy('createdDate', 'desc'));
+        const unsubscribePosts = onSnapshot(postsRef, (querySnapshot) => {
+          const productsData = [];
   
-        const querySnapshot = await getDocs(collection(FIREBASE_DB, "Posts"));
+          querySnapshot.forEach((doc) => {
+            const product = {
+              id: doc.id,
+              ...doc.data(),
+            };
+            productsData.push(product);
+          });
+  
+          setProducts(productsData);
+        });
+  
+        return () => {
+          unsubscribePosts();
+        };
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
+      if (user) {
+        setUser(user);
+  
+        const colRef = collection(FIREBASE_DB, 'Posts');
+        const postsRef = query(colRef, orderBy('createdDate', 'desc'));
+        const unsubscribePosts = onSnapshot(postsRef, (querySnapshot) => {
         const productsData = [];
   
         querySnapshot.forEach((doc) => {
@@ -68,39 +97,10 @@ const HomeScreen = () => {
         : productsData;
 
         setProducts(filteredProducts);
+      });
       }
     });
   },[selectedCategory]);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, async (user) => {
-      if (user) {
-        setUser(user);
-  
-        // ติดตามการเปลี่ยนแปลงในรายการ "Posts"
-        const postsRef = collection(FIREBASE_DB, 'Posts');
-        const unsubscribePosts = onSnapshot(postsRef, (querySnapshot) => {
-          const productsData = [];
-  
-          querySnapshot.forEach((doc) => {
-            const product = {
-              id: doc.id,
-              ...doc.data(),
-            };
-            productsData.push(product);
-          });
-  
-          // อัปเดตข้อมูลเมื่อมีการเปลี่ยนแปลง
-          setProducts(productsData);
-        });
-  
-        // ยกเลิกการติดตามเมื่อยกเลิก useEffect หรือ component unmount
-        return () => {
-          unsubscribePosts();
-        };
-      }
-    });
-  }, []);
   
   console.log(products);
 
@@ -141,6 +141,7 @@ const HomeScreen = () => {
       userid={item.userid}
       id={item.id}
       bankName={item.bankName}
+      createdDate={item.createdDate}
     />
   )}
   ListHeaderComponent={

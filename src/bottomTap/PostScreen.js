@@ -14,7 +14,7 @@ import { FIREBASE_DB, FIREBASE_AUTH, FIREBASE_STORAGE } from "../../config";
 import * as ImagePicker from 'expo-image-picker';
 import { Image } from "react-native";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes } from 'firebase/storage';
 
 const PostScreen = () => {
@@ -28,11 +28,7 @@ const PostScreen = () => {
   const [bankName, setBankName] = useState("");
   const [image, setImage] = useState(null);
  
-    // สร้างวันที่ปัจจุบันในรูปแบบ Date
-    const currentDate = new Date();
 
-    // สร้าง Timestamp จากวันที่และเวลาปัจจุบัน
-    const currentTimestamp = Timestamp.fromDate(currentDate);
   useEffect(() => {
     onAuthStateChanged(FIREBASE_AUTH, async (user) => {
       if(user){
@@ -51,7 +47,7 @@ const PostScreen = () => {
       accountNumber : accountNumber,
       accountName : accountName,
       bankName : bankName,
-      createdDate: currentTimestamp, 
+      createdDate: serverTimestamp(), 
       });
       const storage = FIREBASE_STORAGE;
       const response = await fetch(image);

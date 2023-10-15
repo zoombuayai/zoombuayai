@@ -12,6 +12,7 @@ const PostComponent = ({
   userid,
   id,
   bankName,
+  createdDate
 }) => {
   const [imgUser,setImgUser] = useState("");
   const [imgProduct,setImgProduct] = useState("");
@@ -24,7 +25,6 @@ const PostComponent = ({
     const storage = FIREBASE_STORAGE;
     getDownloadURL(ref(storage,'Profile/' + userid))
     .then((url) => {
-      console.log(url);
       setImgUser(url);
     })
   }
@@ -33,13 +33,38 @@ const PostComponent = ({
     const storage = FIREBASE_STORAGE;
     getDownloadURL(ref(storage,'ImagePost/' + id))
     .then((url) => {
-      console.log(url);
       setImgProduct(url);
     })
   }
 
-  console.log(imgUser);
+  const formatTimestamp = (createdDate) => {
+    const now = new Date();
+    const time = new Date(createdDate.seconds * 1000);
 
+    // คำนวณระยะเวลาระหว่างเวลาปัจจุบันกับ timestamp
+    const timeDiff = now - time;
+    const secondsDiff = Math.floor(timeDiff / 1000);
+
+    // แปลงเวลาให้อยู่ในรูปข้อความตามความต้องการ
+    if (secondsDiff < 60) {
+      return "เร็ว ๆ นี้";
+    } else if (secondsDiff < 3600) {
+      const minutes = Math.floor(secondsDiff / 60);
+      return `${minutes} นาทีที่ผ่านมา`;
+    } else if (secondsDiff < 86400) {
+      const hours = Math.floor(secondsDiff / 3600);
+      return `${hours} ชั่วโมงที่ผ่านมา`;
+    } else if (secondsDiff < 172800) {
+      return "เมื่อวาน";
+    } else if (secondsDiff < 604800) {
+      const days = Math.floor(secondsDiff / 86400);
+      return `${days} วันที่ผ่านมา`;
+    } else {
+      const months = now.getMonth() - time.getMonth() + (12 * (now.getFullYear() - time.getFullYear()));
+      return `${months} เดือนที่ผ่านมา`;
+    }
+  };
+  console.log(category);
   return (
     <View className="h-[490px] mt-10">
       <View className="px-3 pt-2">
@@ -53,7 +78,7 @@ const PostComponent = ({
             />
             <View className="ml-2 justify-center">
               <Text className="text-[16px] font-semibold">{bankName}</Text>
-              <Text className="text-[12px] text-gray-400">yesterday</Text>
+              <Text className="text-[12px] text-gray-400">{formatTimestamp(createdDate)}</Text>
             </View>
           </View>
           <View>

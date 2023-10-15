@@ -14,13 +14,13 @@ const WelcomeScreen = ({ navigation }) => {
 
   const auth = FIREBASE_AUTH;
 
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       navigation.navigate('Home')
-  //     }
-  //   })
-  // });
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.navigate('Home')
+      }
+    })
+  });
 
 
 
